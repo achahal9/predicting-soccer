@@ -1,0 +1,6 @@
+leagues:
+  premier_league:
+    id: "ENG-Premier League"
+    fbref_id: 9
+    seasons: [2021, 2022, 2023, 2024, 2025]
+    pythagorean_exponent: 1.35  # soccer specific exponent
