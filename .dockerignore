@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Environment Variables
+.env
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Documentation
+README.md

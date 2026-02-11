@@ -1,0 +1,62 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Template # Replace with project name
+
+# This defines the triggers for the workflow
+# i.e. when the workflow will run
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# This defines the permissions for the workflow
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    # This defines the type of machine to run the job on
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # Copies repository code to the runner
+    - uses: actions/checkout@v4
+
+    # This step sets up Python on the runner
+    # Python version - 3.12
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+
+    # Install uv on the runner
+    - name: Install uv with all available options
+      uses: astral-sh/setup-uv@v7
+
+    # The next steps use *run* to execute commands on the runner
+    # This is just like typing commands in the Codespace terminal
+
+    # This step installs dependencies
+    - name: Install dependencies with uv
+      run: |
+        uv sync --frozen
+
+    # This step runs unit tests with pytest
+    # (we need -m so that our tests can find our notebook code)
+    - name: Test with pytest
+      run: |
+        uv run -m pytest
+
+    # This step runs the linter against the codebase
+    - name: Lint with ruff
+      run: |
+        uvx ruff check --fix
+
+    # Steps to run formatting steps and type checking
+    - name: format
+      run: |
+        uvx ruff format .
