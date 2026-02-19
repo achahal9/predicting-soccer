@@ -1238,6 +1238,7 @@ dependencies = [
     { name = "numpy" },
     { name = "openpyxl" },
     { name = "pandas" },
+    { name = "requests" },
     { name = "scikit-learn" },
     { name = "soccerdata" },
 ]
@@ -1258,6 +1259,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.4.2" },
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "pandas", specifier = ">=2.2.0,<3.0.0" },
+    { name = "requests", specifier = ">=2.32.5" },
     { name = "scikit-learn", specifier = ">=1.8.0" },
     { name = "soccerdata", specifier = ">=1.8.7" },
 ]
