@@ -28,6 +28,11 @@ from src.data.ingest_weather import ingest_historical_weather
 from src.data.ingest_schedule import build_schedule_metrics_table
 from src.data.ingest_lineups import ingest_pl_lineups
 
+# Scrapling-based scrapers
+from src.data.scrape_fbref_stats import scrape_fbref_advanced_stats
+from src.data.scrape_standings import scrape_all_standings
+from src.data.scrape_transfers import scrape_all_transfers
+
 # Database and processing modules
 from src.database.schema import initialize_professional_db
 from src.database.id_reconciliation import reconcile_players_across_sources, audit_id_mappings
@@ -79,6 +84,9 @@ def run_data_ingestion(seasons=None):
     logger.info("\n[1.5] Ingesting match lineups...")
     ingest_pl_lineups(seasons, conn)
     
+    # Scrapling-based scrapers
+    run_scrapling_scrapers(conn)
+    
     conn.close()
     logger.info("\n✓ Data ingestion complete\n")
 
@@ -103,6 +111,51 @@ def run_id_reconciliation():
     
     conn.close()
     logger.info("\n✓ ID reconciliation complete\n")
+
+def run_scrapling_scrapers(conn: sqlite3.Connection = None):
+    """Run all Scrapling-based web scrapers."""
+    logger.info("=" * 60)
+    logger.info("SCRAPLING SCRAPERS")
+    logger.info("=" * 60)
+    
+    close_conn = False
+    if conn is None:
+        conn = sqlite3.connect(DB_PATH)
+        close_conn = True
+    
+    # 1. Injury data from Transfermarkt
+    logger.info("\n[S.1] Scraping injury data (Transfermarkt)...")
+    try:
+        ingest_injuries(conn, source='transfermarkt')
+    except Exception as e:
+        logger.error(f"Injury scraping failed: {e}")
+    
+    # 2. FBref advanced stats (xG, possession)
+    logger.info("\n[S.2] Scraping FBref advanced stats...")
+    try:
+        scrape_fbref_advanced_stats(conn)
+    except Exception as e:
+        logger.error(f"FBref stats scraping failed: {e}")
+    
+    # 3. League standings
+    logger.info("\n[S.3] Scraping league standings...")
+    try:
+        scrape_all_standings(conn)
+    except Exception as e:
+        logger.error(f"Standings scraping failed: {e}")
+    
+    # 4. Transfer activity
+    logger.info("\n[S.4] Scraping transfer activity...")
+    try:
+        scrape_all_transfers(conn)
+    except Exception as e:
+        logger.error(f"Transfer scraping failed: {e}")
+    
+    if close_conn:
+        conn.close()
+    
+    logger.info("\n✓ Scrapling scrapers complete\n")
+
 
 def run_feature_engineering(season_filter=None):
     """Build training features from ingested data."""
@@ -164,7 +217,7 @@ def main():
     
     parser.add_argument(
         '--phase',
-        choices=['all', 'init', 'ingest', 'reconcile', 'features'],
+        choices=['all', 'init', 'ingest', 'reconcile', 'features', 'scrape'],
         default='all',
         help='Which phase(s) to run'
     )
@@ -204,6 +257,9 @@ def main():
         run_id_reconciliation()
     elif args.phase == 'features':
         run_feature_engineering()
+    elif args.phase == 'scrape':
+        init_database()
+        run_scrapling_scrapers()
 
 if __name__ == "__main__":
     main()

@@ -3,8 +3,10 @@ name = "my-template"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.14"
 dependencies = [
+    "beautifulsoup4>=4.12.0",
+    "playwright>=1.40.0",
     "ipykernel>=7.2.0",
     "jupyter>=1.1.1",
     "matplotlib>=3.10.8",
@@ -19,7 +21,12 @@ dependencies = [
 [dependency-groups]
 dev = [
     "isort>=7.0.0",
-    "pytest>=9.0.2",
+    "pytest>=8.3.5",
     "ruff>=0.15.0",
     "ty>=0.0.16",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "network: tests that require internet access (deselect with '-m not network')",
 ]

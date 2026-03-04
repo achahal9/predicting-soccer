@@ -259,6 +259,31 @@ def initialize_professional_db():
         )
     ''')
 
+    # === STANDINGS DATA ===
+
+    # 15. League Standings (snapshot-based for tracking position changes)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS standings (
+            standing_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            team_id INTEGER NOT NULL,
+            season TEXT NOT NULL,
+            league TEXT NOT NULL,
+            position INTEGER,
+            played INTEGER DEFAULT 0,
+            wins INTEGER DEFAULT 0,
+            draws INTEGER DEFAULT 0,
+            losses INTEGER DEFAULT 0,
+            goals_for INTEGER DEFAULT 0,
+            goals_against INTEGER DEFAULT 0,
+            goal_diff INTEGER DEFAULT 0,
+            points INTEGER DEFAULT 0,
+            snapshot_date DATE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(team_id) REFERENCES teams(team_id),
+            UNIQUE(team_id, season, league, snapshot_date)
+        )
+    ''')
+
     # === CREATE INDEXES FOR PERFORMANCE ===
     
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_id_mapping_entity ON id_mapping(entity_type, master_id)')
